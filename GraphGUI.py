@@ -6,10 +6,15 @@ from pygame.math import Vector2
 import sys
 from time import monotonic
 import random
+from SensorRead import SensorRead
 
 pygame.init()
 
 class GraphGUI(QMainWindow):
+    time = []
+    temp = []
+    humid = []
+    light = []
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout()
@@ -25,12 +30,12 @@ class GraphGUI(QMainWindow):
 
         self.plot_graph2 = pg.PlotWidget()
         self.plot_graph2.setBackground("#000000")
-        self.plot_graph2.setLabel("left", "Light")
+        self.plot_graph2.setLabel("left", "Humidity")
         self.plot_graph2.setLabel("bottom", "Time")
 
         self.plot_graph3 = pg.PlotWidget()
         self.plot_graph3.setBackground("#000000")
-        self.plot_graph3.setLabel("left", "Humidity")
+        self.plot_graph3.setLabel("left", "Light")
         self.plot_graph3.setLabel("bottom", "Time")
 
         layout.addWidget(self.plot_graph1)
@@ -41,15 +46,11 @@ class GraphGUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.interval = 500
+        self.interval = 100
 
-        self.x = []
-        self.y = []
-        self.points = []
-
-        self.data = self.plot_graph1.plot(self.x, self.y, pen=pen)
-        self.data2 = self.plot_graph2.plot(self.x, self.y, pen=pen2)
-        self.data3 = self.plot_graph3.plot(self.x, self.y, pen=pen3)
+        self.data = self.plot_graph1.plot(self.time, self.temp, pen=pen)
+        self.data2 = self.plot_graph2.plot(self.time, self.humid, pen=pen2)
+        self.data3 = self.plot_graph3.plot(self.time, self.light, pen=pen3)
 
         self.timer = QTimer()
         self.timer.setInterval(self.interval)
@@ -57,24 +58,29 @@ class GraphGUI(QMainWindow):
         self.timer.start()
 
     def update_plot_data(self):
-        if len(self.x) > 10:
-            self.x = self.x[1:]
-            self.y = self.y[1:]
-        point = Vector2(monotonic(), random.uniform(20.0, 28.0))
-        self.points.append(point)
-        self.x.append(point.x)
-        self.y.append(point.y)
+        if len(self.time) > 10:
+            self.time = self.time[1:]
+            self.temp = self.temp[1:]
+            self.humid = self.humid[1:]
+            self.light = self.light[1:]
 
-        self.data.setData(self.x, self.y)
-        self.data2.setData(self.x, self.y)
-        self.data3.setData(self.x, self.y)
+        sensor_data = SensorRead().read_values()
+
+        self.time.append(monotonic())
+        self.temp.append(sensor_data["temperature"])
+        self.humid.append(sensor_data["humidity"])
+        self.light.append(sensor_data["light"])
+
+        self.data.setData(self.time, self.temp)
+        self.data2.setData(self.time, self.humid)
+        self.data3.setData(self.time, self.light)
 
 
 
-
-app = QApplication(sys.argv)
-main = GraphGUI()
-main.show()
-app.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main = GraphGUI()
+    main.show()
+    app.exec()
 
 

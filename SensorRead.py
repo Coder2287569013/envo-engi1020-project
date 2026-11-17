@@ -9,3 +9,4 @@ class SensorRead():
         }
 
         return value_dict
+
