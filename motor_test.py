@@ -1,51 +1,44 @@
 from engi1020.arduino.api import *
-# from time import sleep
+from time import sleep
 
-# IN1 = 8
-# IN2 = 9
-# IN3 = 10
-# IN4 = 11
+IN1 = 8
+IN2 = 9
+IN3 = 10
+IN4 = 11
 
 
 class MotorSystem():
     def __init__(self, in1, in2, in3, in4):
-        self.m1 = (in1, in2)
-        self.m2 = (in3, in4)
+        self.m = (in1, in2, in3, in4)
+        self.pin_vals = ()
+        self.movement = ""
+
+    def move(self):
+        getattr(self, self.movement)
+        for i in range(len(self.pin_vals)):
+            digital_write(self.m[i], self.pin_vals[i])
 
     def forward(self):
-        digital_write(self.m1[0], True)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], True)
-        digital_write(self.m2[1], False)
+        self.pin_vals = (1,0,1,0)
 
     def backward(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], True)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], True)
+        self.pin_vals = (0,1,0,1)
 
     def stop(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], False)
+        self.pin_vals = (0,0,0,0)
 
     def right(self):
-        digital_write(self.m1[0], True)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], True)
+        self.pin_vals = (1,0,0,1)
 
     def left(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], True)
-        digital_write(self.m2[0], True)
-        digital_write(self.m2[1], False)
+        self.pin_vals = (0,1,1,0)
 
-# motors = MotorSystem(IN1, IN2, IN3, IN4)
-# motors.forward()
-# sleep(1)
-# motors.stop()
+motors = MotorSystem(IN1, IN2, IN3, IN4)
+motors.movement = "forward"
+motors.move()
+sleep(1)
+motors.movement = "stop"
+motors.move()
 
 # sleep(2)
 # motors.right()
