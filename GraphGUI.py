@@ -1,14 +1,9 @@
-from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QLabel
 from PySide6.QtCore import QTimer
 import pyqtgraph as pg
-import pygame
-from pygame.math import Vector2
 import sys
 from time import monotonic
-import random
 from SensorRead import SensorRead
-
-pygame.init()
 
 class GraphGUI(QMainWindow):
     time = []
@@ -17,6 +12,7 @@ class GraphGUI(QMainWindow):
     light = []
     def __init__(self):
         super().__init__()
+        main_layout = QVBoxLayout()
         layout = QHBoxLayout()
 
         pen = pg.mkPen(color=(255,0,0))
@@ -38,12 +34,17 @@ class GraphGUI(QMainWindow):
         self.plot_graph3.setLabel("left", "Light")
         self.plot_graph3.setLabel("bottom", "Time")
 
+        self.distance = QLabel("0 cm")
+
         layout.addWidget(self.plot_graph1)
         layout.addWidget(self.plot_graph2)
         layout.addWidget(self.plot_graph3)
+        main_layout.addLayout(layout)
+
+        main_layout.addWidget(self.distance)
 
         widget = QWidget()
-        widget.setLayout(layout)
+        widget.setLayout(main_layout)
         self.setCentralWidget(widget)
 
         self.interval = 100
@@ -59,10 +60,10 @@ class GraphGUI(QMainWindow):
 
     def update_plot_data(self):
         if len(self.time) > 10:
-            self.time = self.time[1:]
-            self.temp = self.temp[1:]
-            self.humid = self.humid[1:]
-            self.light = self.light[1:]
+            self.time.pop(0)
+            self.temp.pop(0)
+            self.humid.pop(0)
+            self.light.pop(0)
 
         sensor_data = SensorRead().read_values()
 
@@ -70,6 +71,8 @@ class GraphGUI(QMainWindow):
         self.temp.append(sensor_data["temperature"])
         self.humid.append(sensor_data["humidity"])
         self.light.append(sensor_data["light"])
+
+        self.distance.setText(f"{sensor_data["distance"]} cm")
 
         self.data.setData(self.time, self.temp)
         self.data2.setData(self.time, self.humid)

@@ -5,8 +5,8 @@ class SensorRead():
         value_dict = {
             "temperature": temp_humid_get_temp(),
             "humidity": temp_humid_get_humidity(),
-            "light": analog_read(6)
+            "light": analog_read(6),
+            "distance": ultra_get_centimeters(2)
         }
 
         return value_dict
-
