@@ -58,7 +58,7 @@ class MotorSystem():
 # digital_write(IN3, True)
 # digital_write(IN4, False)
 # sleep(2)
-# #Another direction
+# Other direction
 # digital_write(IN1, False)
 # digital_write(IN2, True)
 # digital_write(IN3, False)
