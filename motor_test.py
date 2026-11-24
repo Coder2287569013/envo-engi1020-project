@@ -11,34 +11,29 @@ class MotorSystem():
     def __init__(self, in1, in2, in3, in4):
         self.m = (in1, in2, in3, in4)
         self.pin_vals = ()
-        self.movement = ""
 
     def move(self):
-        getattr(self, self.movement)
         for i in range(len(self.pin_vals)):
+            print("dsa")
             digital_write(self.m[i], self.pin_vals[i])
 
     def forward(self):
-        self.pin_vals = (1,0,1,0)
+        self.pin_vals = (0,1,0,1)
 
     def backward(self):
-        self.pin_vals = (0,1,0,1)
+        self.pin_vals = (1,0,1,0)
 
     def stop(self):
         self.pin_vals = (0,0,0,0)
 
     def right(self):
-        self.pin_vals = (1,0,0,1)
-
-    def left(self):
         self.pin_vals = (0,1,1,0)
 
-motors = MotorSystem(IN1, IN2, IN3, IN4)
-motors.movement = "forward"
-motors.move()
-sleep(1)
-motors.movement = "stop"
-motors.move()
+    def left(self):
+        self.pin_vals = (1,0,0,1)
+
+if __name__ == "motor_test":
+    motor_sys = MotorSystem(IN1, IN2, IN3, IN4)
 
 # sleep(2)
 # motors.right()

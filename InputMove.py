@@ -1,92 +1,66 @@
+#Note: we could continue using pygame for processing inputs, or switch to "keyboard" lib. - Vlad
 import pygame
-from engi1020.arduino.api import *
+from motor_test import motor_sys
+
+cell_size = 128
+width = 5
+height = 5
+
+class MoveCell():
+    def __init__(self,x,y,w,h,color):
+        self.rect = pygame.Rect(x,y,w,h)
+        self.color = color
+    def display(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
 
 pygame.init()
+screen = pygame.display.set_mode((width*cell_size, height*cell_size))
+pygame.display.set_caption("Movement")
+clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode((400, 300))
-pygame.display.set_caption('Car Controller')
+forward_cell = MoveCell(2*cell_size, cell_size, cell_size, cell_size, (255,0,0))
+backward_cell = MoveCell(2*cell_size, 3*cell_size, cell_size, cell_size, (255,0,0))
+left_cell = MoveCell(cell_size, 2*cell_size, cell_size, cell_size, (255,0,0))
+right_cell = MoveCell(3*cell_size, 2*cell_size, cell_size, cell_size, (255,0,0))
 
-
-class MotorSystem:
-    def __init__(self, in1, in2, in3, in4):
-        self.m1 = (in1, in2)
-        self.m2 = (in3, in4)
-
-    def forward(self):
-        digital_write(self.m1[0], True)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], True)
-        digital_write(self.m2[1], False)
-
-    def backward(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], True)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], True)
-
-    def stop(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], False)
-
-    def right(self):
-        digital_write(self.m1[0], True)
-        digital_write(self.m1[1], False)
-        digital_write(self.m2[0], False)
-        digital_write(self.m2[1], True)
-
-    def left(self):
-        digital_write(self.m1[0], False)
-        digital_write(self.m1[1], True)
-        digital_write(self.m2[0], True)
-        digital_write(self.m2[1], False)
-in1 = 8
-in2 = 9
-in3 = 10
-in4 = 11
-
-motors = MotorSystem(in1, in2, in3, in4)
-
-font = pygame.font.Font(None, 42)
-current_direction = "Waiting for input..."
-
-running = True
-
-while running:
-
+while True:
+    screen.fill((0,0,0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
+            break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w:
+                forward_cell.color = (0,255,0)
+                motor_sys.forward()
+            elif event.key == pygame.K_s:
+                backward_cell.color = (0,255,0)
+                motor_sys.backward()
+            elif event.key == pygame.K_a:
+                left_cell.color = (0,255,0)
+                motor_sys.left()
+            elif event.key == pygame.K_d:
+                right_cell.color = (0,255,0)
+                motor_sys.right()
+            motor_sys.move()
 
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_w]:
-        current_direction = "Forward"
-        motors.forward()
-
-    elif keys[pygame.K_s]:
-        current_direction = "Backward"
-        motors.backward()
-
-    elif keys[pygame.K_a]:
-        current_direction = "Left"
-        motors.left()
-
-    elif keys[pygame.K_d]:
-        current_direction = "Right"
-        motors.right()
-
-    else:
-        current_direction = "Stopped"
-        motors.stop()
-
-    screen.fill((0, 0, 0))
-
-    text = font.render(current_direction, True, (255, 255, 255))
-    screen.blit(text, (100, 130))
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_w:
+                forward_cell.color = (255,0,0)
+            elif event.key == pygame.K_s:
+                backward_cell.color = (255,0,0)
+            elif event.key == pygame.K_a:
+                left_cell.color = (255,0,0)
+            elif event.key == pygame.K_d:
+                right_cell.color = (255,0,0)
+            motor_sys.stop()
+            motor_sys.move()
 
     pygame.display.update()
 
-motors.stop()
-pygame.quit()
+    forward_cell.display(screen)
+    backward_cell.display(screen)
+    left_cell.display(screen)
+    right_cell.display(screen)
+
+    clock.tick(60)
