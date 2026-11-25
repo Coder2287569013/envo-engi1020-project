@@ -80,7 +80,7 @@ class GraphGUI(QMainWindow):
         elif sensor_data["distance"] < 30:
             self.distance.setStyleSheet(
             "color: white; font-size: 20px; font-family: Century Gothic;"
-            "font-weight: bold; border-radius: 10px; background-color: #E03602; opacity: 0.3;")
+            "font-weight: bold; border-radius: 10px; background-color: #EE7600; opacity: 0.3;")
 
         else: 
             self.distance.setStyleSheet(
