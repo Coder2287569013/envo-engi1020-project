@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QLabel
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Qt
 import pyqtgraph as pg
 import sys
 from time import monotonic
@@ -72,7 +72,23 @@ class GraphGUI(QMainWindow):
         self.humid.append(sensor_data["humidity"])
         self.light.append(sensor_data["light"])
 
+        if sensor_data["distance"] < 15:
+            self.distance.setStyleSheet(
+            "color: white; font-size: 20px; font-family: Century Gothic;"
+            "font-weight: bold; border-radius: 10px; background-color: #DB0447; opacity: 0.3;")
+
+        elif sensor_data["distance"] < 30:
+            self.distance.setStyleSheet(
+            "color: white; font-size: 20px; font-family: Century Gothic;"
+            "font-weight: bold; border-radius: 10px; background-color: #E03602; opacity: 0.3;")
+
+        else: 
+            self.distance.setStyleSheet(
+            "color: white; font-size: 20px; font-family: Century Gothic;"
+            "font-weight: bold; border-radius: 10px; background-color: #027736; opacity: 0.3;")
+
         self.distance.setText(f"{sensor_data["distance"]} cm")
+        self.distance.setAlignment(Qt.AlignCenter)
 
         self.data.setData(self.time, self.temp)
         self.data2.setData(self.time, self.humid)
